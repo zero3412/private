@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>百度地图</title>
+    
+</head>
+<body>
+百度地图 V1.4
+<div id="allmap" style="width:100%;height:30vh;"></div>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4"></script>
+<script type="text/javascript">
+  var map    = new BMap.Map("allmap", { mapType: BMAP_NORMAL_MAP });
+  var point  = new BMap.Point(119.40668, 26.259407);
+  var marker = new BMap.Marker(point);
+		
+    map.centerAndZoom(point, 22);
+    map.enableScrollWheelZoom();
+    map.enableKeyboard();
+    map.addControl(new BMap.NavigationControl());
+    map.setCurrentCity("福州");
+    var opts = {
+        width: 310,     // 信息窗口宽度
+        height: 85,     // 信息窗口高度
+        title: "<div><span>福州贵安世纪金源温泉大饭店</span><br/><span>地址：中国福建福州贵安新天地</span><br/><span>总机：0591-38188888</span></div>"
+    }
+    
+    map.addOverlay(marker);
+    var infoWindow = new BMap.InfoWindow("", opts);
+		
+    marker.addEventListener("click", function () {
+      this.openInfoWindow(infoWindow);
+    });
+</script>
+
+百度地图 V2
+<div id="allmap" style=" style="width:100%;height:30vh;""></div>
+<div id="panorama" style=" style="width:100%;height:30vh;""></div>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=517b8eeb3d1ddcb07caf760a54c69234"></script>
+<script type="text/javascript">
+	//地图初始化
+	var baidumap = new BMap.Map("allmap");
+	
+	//定位按钮
+	var geolocationControl = new BMap.GeolocationControl();
+		baidumap.addControl(geolocationControl);
+
+	//地图基础设定
+	var point    = new BMap.Point(121.509004,31.300733);
+		baidumap.centerAndZoom(point, 22);
+		baidumap.addControl(new BMap.NavigationControl());
+		
+	//驾车线路规划
+	var geolocation = new BMap.Geolocation();
+		geolocation.getCurrentPosition(function(r){
+			if(this.getStatus() == BMAP_STATUS_SUCCESS){
+				var startPoint = new BMap.Point(r.point.lng, r.point.lat);
+				var driving = new BMap.DrivingRoute(baidumap, {renderOptions:{map: baidumap, autoViewport: true}});
+					driving.search(startPoint, point);
+				//alert('您的位置：'+r.point.lng+','+r.point.lat);
+			}
+			else {
+				alert('GPS定位不了您的位置，无法完成驾车线路规划。');
+				//alert('failed'+this.getStatus());
+			}        
+		},{enableHighAccuracy: true})	
+	
+	//信息窗口初始化
+	var opts = {
+        width: 310,     // 信息窗口宽度
+        height: 85,     // 信息窗口高度
+        title: "<div><span>福州贵安世纪金源温泉大饭店</span><br/><span>地址：中国福建福州贵安新天地</span><br/><span>总机：0591-38188888</span></div>"
+    }
+    var marker = new BMap.Marker(point);
+		baidumap.addOverlay(marker);
+	var infoWindow = new BMap.InfoWindow("", opts);
+		marker.addEventListener("click", function () {
+			this.openInfoWindow(infoWindow);
+		});
+	
+	//全景设定
+	var panorama = new BMap.Panorama('panorama'); 
+		panorama.setPov({heading: -40, pitch: 6});
+		panorama.setPosition(new BMap.Point(121.509004,31.300733));
+</script>
+</body>
+</html>

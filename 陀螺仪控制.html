@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>deviceMotionHandler</title>
+    <script src="public/javascript/jquery.min.js"></script>
+    <script src="public/javascript/jquery.transit.min.js"></script>
+</head>
+<body>
+    <div id="status"></div>
+<script>
+$(function(){
+	
+    /**
+    if (window.DeviceMotionEvent) {
+        window.addEventListener('devicemotion', deviceMotionHandler, false);
+    } else {
+        alert('本设备不支持devicemotion事件');
+    }
+    function deviceMotionHandler(eventData) {
+        var acceleration = eventData.accelerationIncludingGravity,
+            x, y, z;
+        x = acceleration.x;
+        y = acceleration.y;
+        z = acceleration.z;
+        document.getElementById("status").innerHTML = "x:"+x+"<br />y:"+y+"<br />z:"+z;
+    }*/
+
+    /** SHAKE
+    var SHAKE_THRESHOLD = 800;
+	var last_update = 0;
+	var x, y, z, last_x, last_y, last_z;       
+	function deviceMotionHandler(eventData) {        
+	  var acceleration =eventData.accelerationIncludingGravity;
+	  var curTime = new Date().getTime();       
+	  if ((curTime - last_update)> 300) {                
+	      var diffTime = curTime -last_update;
+	      last_update = curTime;       
+	      x = acceleration.x;
+	      y = acceleration.y;
+	      z = acceleration.z;       
+	      var speed = Math.abs(x +y + z - last_x - last_y - last_z) / diffTime * 10000;          
+	           if (speed > SHAKE_THRESHOLD) {
+	                alert("shaked!");
+	      }
+	      last_x = x;
+	      last_y = y;
+	      last_z = z;
+	    }
+	}
+	window.addEventListener('devicemotion', deviceMotionHandler, false);
+	*/
+
+	function deviceMotionHandler(eventData)
+	{
+		console.log(eventData);
+	  // 捕捉重力加速度
+	  var acceleration = eventData.accelerationIncludingGravity;     
+	  // 打印加速数据
+	  var rawAcceleration = "[" +  Math.round(acceleration.x) + ", " +Math.round(acceleration.y) + ", " + Math.round(acceleration.z) + "]";
+		// Z轴,可知设备朝上或者朝下
+	  var facingUp = -1;
+	  if (acceleration.z > 0) {
+	    facingUp = +1;
+	  }     
+
+	  // 根据重力通过 acceleration.x|y 转换得到加速值,
+	  // 运用重力加速度9.81来计算得到一个百分比然后乘以转换角度90
+	  var tiltLR = Math.round(((acceleration.x) / 9.81) * -90);
+	  var tiltFB = Math.round(((acceleration.y + 9.81) / 9.81) * 90 * facingUp);     
+	  // 打印加速度的计算结果
+	  document.getElementById("moAccel").innerHTML = rawAcceleration;
+	  document.getElementById("moCalcTiltLR").innerHTML = tiltLR;
+	  document.getElementById("moCalcTiltFB").innerHTML = tiltFB;     
+	  // 将2D和3D的转换应用到图片上
+	  //var rotation = "rotate(" + tiltLR + "deg) (1,0,0, " + (tiltFB) + "deg)";
+	  //document.getElementById("imgLogo").style.webkitTransform = rotation;
+	  $('#imgLogo').transition({
+			perspective: '600px',
+			rotateY: (-tiltLR) + 'deg',
+			scale: 1.08
+		},45);
+	}
+	window.addEventListener('devicemotion', deviceMotionHandler, false);
+
+	/**
+	function deviceOrientation(eventData)
+	{
+		console.log(eventData);
+		
+		var x = eventData.gamma; // range [-90,90]
+        var y = eventData.beta;  // range [-180,180]
+		var z = eventData.alpha;
+	 
+	  // 打印加速数据
+	  var rawAcceleration = "[" +  Math.round(x) + ", " +Math.round(y) + ", " + Math.round(z) + "]";
+		// Z轴,可知设备朝上或者朝下
+	  var facingUp = -1;
+	  if (z > 0) {
+	    facingUp = +1;
+	  }     
+
+	  // 根据重力通过 acceleration.x|y 转换得到加速值,
+	  // 运用重力加速度9.81来计算得到一个百分比然后乘以转换角度90
+	  var tiltLR = Math.round(((x) / 9.81) * -90);
+	  var tiltFB = Math.round(((y + 9.81) / 9.81) * 90 * facingUp);  
+	     
+	  // 打印加速度的计算结果
+	  document.getElementById("moAccel").innerHTML = rawAcceleration;
+	  document.getElementById("moCalcTiltLR").innerHTML = tiltLR;
+	  document.getElementById("moCalcTiltFB").innerHTML = tiltFB;     
+
+	  //var rotation = "rotate(" + tiltLR + "deg) (1,0,0, " + (tiltFB) + "deg)";
+	  //document.getElementById("imgLogo").style.webkitTransform = rotation;
+		$('#imgLogo').transition({
+			perspective: '600px',
+			rotateY: (-x) + 'deg',
+			scale: 1.08
+		},50);
+	}
+	window.addEventListener('deviceorientation', deviceOrientation, false);
+	*/
+	
+});
+</script>
+    <div id="moAccel"></div>
+    <div id="moCalcTiltLR"></div>
+    <div id="moCalcTiltFB"></div>
+    <style>
+    #imgLogo{width:80vw;height:80vw;margin:0px auto;margin-top:80px;}
+    </style>
+    <div id="imgLogo"><img src="upload/upload-big.jpg" style="width:100%;" /></div>
+    <div id="" style="transform: perspective(600px) rotateY(10deg) scale(1.08);display:none;"><img src="upload/upload-big.jpg" style="width:100%;" /></div>
+</body>
+</html>
